@@ -14,4 +14,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/auth", authRouter);
 app.use("/user", userRouter);
 
+app.use((error, req, res, next) => {
+  res.status(500).send(error.message || error);
+});
+
 module.exports = app;
