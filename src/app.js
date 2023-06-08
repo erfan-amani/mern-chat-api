@@ -6,6 +6,11 @@ require("dotenv").config();
 
 const { socketAuth } = require("./middlewares/auth");
 const registerMessageHandler = require("./socket/messageHandler");
+const registerChatDataHandler = require("./socket/chatDataHandler");
+const authRouter = require("./routes/auth");
+const userRouter = require("./routes/user");
+const getConnectedUsers = require("./utils/socket");
+require("./db/mongoose");
 
 const app = express();
 const server = http.createServer(app);
@@ -14,12 +19,14 @@ const io = socketio(server, { cors: { origin: "*" } });
 io.use(socketAuth);
 
 io.on("connection", (socket) => {
+  registerChatDataHandler(socket, io);
   registerMessageHandler(socket);
-});
 
-const db = require("./db/mongoose");
-const authRouter = require("./routes/auth");
-const userRouter = require("./routes/user");
+  socket.on("disconnect", () => {
+    const users = getConnectedUsers(io);
+    io.emit("chatData", users);
+  });
+});
 
 app.use(cors());
 app.use(express.json());
