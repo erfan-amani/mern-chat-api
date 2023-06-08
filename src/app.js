@@ -2,38 +2,19 @@ const express = require("express");
 const cors = require("cors");
 const http = require("http");
 const socketio = require("socket.io");
-const jwt = require("jsonwebtoken");
 require("dotenv").config();
-const User = require("./models/user");
+
+const { socketAuth } = require("./middlewares/auth");
+const registerMessageHandler = require("./socket/messageHandler");
 
 const app = express();
 const server = http.createServer(app);
 const io = socketio(server, { cors: { origin: "*" } });
 
-io.use(async (socket, next) => {
-  const token = socket.handshake.auth.token;
-
-  try {
-    if (!token) throw new Error();
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findOne({ _id: decoded.id });
-
-    if (!user) throw new Error();
-
-    socket.user = user;
-    socket.token = token;
-
-    next();
-  } catch (err) {
-    next(new Error("Not authorized. Please provide a valid token!"));
-  }
-});
+io.use(socketAuth);
 
 io.on("connection", (socket) => {
-  console.log(socket.user);
-
-  socket.emit("test");
+  registerMessageHandler(socket);
 });
 
 const db = require("./db/mongoose");

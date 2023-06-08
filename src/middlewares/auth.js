@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 
-const userAuth = async (req, res, next) => {
+const apiAuth = async (req, res, next) => {
   try {
     const bearer = req.header("Authorization");
     const token = bearer.split(" ")[1];
@@ -24,4 +24,24 @@ const userAuth = async (req, res, next) => {
   }
 };
 
-module.exports = userAuth;
+const socketAuth = async (socket, next) => {
+  const token = socket.handshake.auth.token;
+
+  try {
+    if (!token) throw new Error();
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findOne({ _id: decoded.id });
+
+    if (!user) throw new Error();
+
+    socket.user = user;
+    socket.token = token;
+
+    next();
+  } catch (err) {
+    next(new Error("Not authorized. Please provide a valid token!"));
+  }
+};
+
+module.exports = { apiAuth, socketAuth };
