@@ -28,8 +28,6 @@ const getUserData = async (req, res) => {
 };
 
 const getUserRooms = async (req, res) => {
-  console.log("here");
-
   try {
     const userId = req.user._id;
 

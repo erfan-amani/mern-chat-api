@@ -11,7 +11,6 @@ const register = async (req, res, next) => {
   } catch (err) {
     console.log(err.code);
     if (err.name === "MongoServerError" && err.code === 11000) {
-      console.log("here");
       next(new Error("Username is in use!"));
     } else {
       // next(err);

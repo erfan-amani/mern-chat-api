@@ -21,7 +21,7 @@ io.use(socketAuth);
 
 io.on("connection", (socket) => {
   registerChatDataHandler(socket, io);
-  registerMessageHandler(socket);
+  registerMessageHandler(socket, io);
 
   socket.on("disconnect", () => {
     const users = getConnectedUsers(io);
