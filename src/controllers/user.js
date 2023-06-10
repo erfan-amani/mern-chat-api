@@ -1,3 +1,4 @@
+const Room = require("../models/room");
 const User = require("../models/user");
 
 const getProfile = async (req, res) => {
@@ -26,7 +27,24 @@ const getUserData = async (req, res) => {
   }
 };
 
+const getUserRooms = async (req, res) => {
+  console.log("here");
+
+  try {
+    const userId = req.user._id.toString();
+
+    const rooms = await Room.find({ users: userId });
+    // const rooms = await Room.find({ users: { $in: [user._id.toString()] } });
+
+    res.send(rooms);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send(err.message || "Something went wrong!");
+  }
+};
+
 module.exports = {
   getProfile,
   getUserData,
+  getUserRooms,
 };
