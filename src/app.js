@@ -10,6 +10,7 @@ const registerChatDataHandler = require("./socket/chatDataHandler");
 const authRouter = require("./routes/auth");
 const userRouter = require("./routes/user");
 const roomRouter = require("./routes/room");
+const messageRouter = require("./routes/message");
 const getConnectedUsers = require("./utils/socket");
 require("./db/mongoose");
 
@@ -35,6 +36,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/auth", authRouter);
 app.use("/user", userRouter);
 app.use("/room", roomRouter);
+app.use("/message", messageRouter);
 
 app.use((error, req, res, next) => {
   res.status(500).send(error.message || error);

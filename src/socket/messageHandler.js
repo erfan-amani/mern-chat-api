@@ -1,4 +1,5 @@
 const Room = require("../models/room");
+const Message = require("../models/message");
 
 const registerMessageHandler = (socket, io) => {
   socket.on("join", async (other, callback) => {
@@ -15,10 +16,13 @@ const registerMessageHandler = (socket, io) => {
     callback(room);
   });
 
-  socket.on("sendMessage", (message) => {
-    const { text, room } = message || {};
+  socket.on("sendMessage", async (data) => {
+    const { text, room } = data || {};
 
-    io.to(room).emit("message", text);
+    const message = new Message({ room, text, sender: socket.user._id });
+    await message.save();
+
+    io.to(room).emit("message", message);
   });
 };
 
