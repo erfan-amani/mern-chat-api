@@ -31,10 +31,9 @@ const getUserRooms = async (req, res) => {
   console.log("here");
 
   try {
-    const userId = req.user._id.toString();
+    const userId = req.user._id;
 
-    const rooms = await Room.find({ users: userId });
-    // const rooms = await Room.find({ users: { $in: [user._id.toString()] } });
+    const rooms = await Room.find({ users: { $in: [userId] } });
 
     res.send(rooms);
   } catch (err) {

@@ -1,34 +1,12 @@
 const Room = require("../models/room");
 
-const hasRoom = async (req, res) => {
-  try {
-    const { sender, reciever } = req.query;
-
-    console.log({ sender, reciever });
-
-    const roomA = await Room.findById(`${sender}:${reciever}`);
-    if (!!roomA) {
-      res.send(roomA);
-      return;
-    }
-
-    const roomB = await Room.findById(`${reciever}:${sender}`);
-    if (!!roomB) {
-      res.send(roomB);
-      return;
-    }
-
-    res.status(401).send("Room not found!");
-  } catch (err) {
-    res.status(500).send(err.message || "Something went wrong!");
-  }
-};
-
 const createRoom = async (req, res) => {
   try {
     const { sender, reciever } = req.body;
 
-    const room = new Room({ _id: `${sender}:${reciever}` });
+    const room = new Room();
+    room.users.push(sender, reciever);
+    await room.save();
 
     res.status(201).send(room);
   } catch (err) {
@@ -43,18 +21,13 @@ const getRoom = async (req, res) => {
     let room = null;
     let status = 200;
 
-    // check room sender first
-    room = await Room.findById(`${sender}:${reciever}`);
-
-    // check room reciver first
-    if (!room) {
-      room = await Room.findById(`${reciever}:${sender}`);
-    }
+    // check if exist
+    room = await Room.find({ users: { $in: [sender, reciver] } });
 
     // create room
     if (!room) {
       status = 201;
-      room = new Room({ _id: `${sender}:${reciever}` });
+      room = new Room();
       room.users.push(sender, reciever);
       await room.save();
     }
@@ -66,4 +39,4 @@ const getRoom = async (req, res) => {
   }
 };
 
-module.exports = { hasRoom, createRoom, getRoom };
+module.exports = { createRoom, getRoom };
