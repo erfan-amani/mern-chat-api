@@ -35,6 +35,19 @@ const getUserRooms = async (req, res) => {
 
     res.send(rooms);
   } catch (err) {
+    res.status(500).send(err.message || "Something went wrong!");
+  }
+};
+
+const logout = async (req, res) => {
+  try {
+    const token = req.token;
+    const user = req.user;
+
+    user.tokens = user.tokens.filter((t) => t.token !== token);
+    await user.save();
+    res.send();
+  } catch (err) {
     console.log(err);
     res.status(500).send(err.message || "Something went wrong!");
   }
@@ -44,4 +57,5 @@ module.exports = {
   getProfile,
   getUserData,
   getUserRooms,
+  logout,
 };
