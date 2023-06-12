@@ -1,6 +1,6 @@
 const Room = require("../models/room");
 
-const createRoom = async (req, res) => {
+const createRoom = async (req, res, next) => {
   try {
     const { sender, reciever } = req.body;
 
@@ -14,7 +14,7 @@ const createRoom = async (req, res) => {
   }
 };
 
-const getRoom = async (req, res) => {
+const getRoom = async (req, res, next) => {
   try {
     const { sender, reciever } = req.query;
 

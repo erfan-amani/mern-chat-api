@@ -28,7 +28,7 @@ const getUserData = async (req, res, next) => {
   }
 };
 
-const getUserRooms = async (req, res) => {
+const getUserRooms = async (req, res, next) => {
   try {
     const userId = req.user._id;
 
@@ -40,7 +40,7 @@ const getUserRooms = async (req, res) => {
   }
 };
 
-const logout = async (req, res) => {
+const logout = async (req, res, next) => {
   try {
     const token = req.token;
     const user = req.user;
