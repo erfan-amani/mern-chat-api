@@ -27,4 +27,34 @@ const getRoom = async (req, res, next) => {
   }
 };
 
-module.exports = { createRoom, getRoom };
+const getActiveRooms = async (req, res, next) => {
+  try {
+    const user = req.user;
+
+    const userRooms = await Room.find({
+      users: { $in: [user._id] },
+    })
+      .populate("users")
+      .exec();
+
+    const output = [];
+    for (const index in userRooms) {
+      const room = userRooms[index].toObject();
+
+      room.otherUser = room.users.find((u) => u._id !== req.user._id);
+      room.lastMessage = await userRooms[index].getLastMessage();
+
+      delete room.users;
+      delete room?.otherUser?.tokens;
+      delete room?.otherUser?.password;
+
+      room.lastMessage && output.push(room);
+    }
+
+    res.send(output);
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports = { createRoom, getRoom, getActiveRooms };
