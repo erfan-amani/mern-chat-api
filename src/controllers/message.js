@@ -1,20 +1,19 @@
 const Message = require("../models/message");
+const createError = require("../utils/error");
 
-const getMessagesOfRoom = async (req, res) => {
+const getMessagesOfRoom = async (req, res, next) => {
   try {
     const room = req.query.room;
 
-    console.log(!room);
-
     if (!room) {
-      return res.status(400).send("Please provide room!");
+      throw createError("Please provide room!", 400);
     }
 
     const messages = await Message.find({ room });
 
     res.send(messages);
   } catch (err) {
-    res.status(500).send(err.message || "Something went wrong!");
+    next(err);
   }
 };
 
