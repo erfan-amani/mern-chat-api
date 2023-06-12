@@ -10,7 +10,7 @@ const createRoom = async (req, res) => {
 
     res.status(201).send(room);
   } catch (err) {
-    res.status(500).send(err.message || "Something went wrong!");
+    next(err);
   }
 };
 
@@ -35,7 +35,7 @@ const getRoom = async (req, res) => {
     await room.populate("users");
     res.status(status).send(room);
   } catch (err) {
-    res.status(500).send(err.message || "Something went wrong!");
+    next(err);
   }
 };
 
