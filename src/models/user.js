@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
+const createError = require("../utils/error");
 
 const userSchema = new mongoose.Schema(
   {
@@ -43,13 +44,14 @@ userSchema.statics.findByCredential = async function (username, password) {
   const user = await User.findOne({ username });
 
   if (!user) {
-    throw new Error("Unable to login!");
+    throw createError("User not found!", 404);
   }
 
-  const isPasswordMatch = bcrypt.compare(password, user.password);
+  const isPasswordMatch = await bcrypt.compare(password, user.password);
+  console.log({ isPasswordMatch });
 
   if (!isPasswordMatch) {
-    throw new Error("Unable to login!");
+    throw createError("Password is not match with username!", 400);
   }
 
   return user;

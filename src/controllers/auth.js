@@ -1,4 +1,5 @@
 const User = require("../models/user");
+const createError = require("../utils/error");
 
 const register = async (req, res, next) => {
   try {
@@ -9,16 +10,15 @@ const register = async (req, res, next) => {
 
     res.status(201).send({ user, token });
   } catch (err) {
-    console.log(err.code);
     if (err.name === "MongoServerError" && err.code === 11000) {
-      next(new Error("Username is in use!"));
+      next(createError("Username is in use!", 400));
     } else {
-      // next(err);
+      next(createError());
     }
   }
 };
 
-const login = async (req, res) => {
+const login = async (req, res, next) => {
   try {
     const { username, password } = req.body;
 
@@ -26,8 +26,8 @@ const login = async (req, res) => {
     const token = await user.generateAuthToken();
 
     res.send({ user, token });
-  } catch (err) {
-    res.status(400).send(err.message || err);
+  } catch (error) {
+    next(error);
   }
 };
 
