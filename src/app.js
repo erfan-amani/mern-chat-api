@@ -39,7 +39,9 @@ app.use("/room", roomRouter);
 app.use("/message", messageRouter);
 
 app.use((error, req, res, next) => {
-  res.status(500).send(error.message || error);
+  const { status = 500, message = error } = error || {};
+
+  res.status(status).send(message);
 });
 
 module.exports = server;
