@@ -32,8 +32,6 @@ const getActiveRooms = async (user, updatedRoomId) => {
     .populate("lastMessage")
     .exec();
 
-  console.log(rooms);
-
   return !!updatedRoomId ? rooms[0] : rooms;
 };
 

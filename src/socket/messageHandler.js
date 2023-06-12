@@ -11,6 +11,12 @@ const registerMessageHandler = (socket, io) => {
     callback(room);
   });
 
+  socket.on("joinAll", async () => {
+    const rooms = await getActiveRooms(socket.user);
+
+    rooms.forEach((room) => socket.join(room._id.toString()));
+  });
+
   socket.on("sendMessage", async (data) => {
     const { text, room } = data || {};
 
