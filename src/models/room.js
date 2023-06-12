@@ -4,6 +4,10 @@ const Message = require("./message");
 const roomSchema = new mongoose.Schema(
   {
     users: [{ type: mongoose.Types.ObjectId, ref: "User", required: true }],
+    lastMessage: {
+      type: mongoose.Types.ObjectId,
+      ref: "Message",
+    },
   },
   { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );

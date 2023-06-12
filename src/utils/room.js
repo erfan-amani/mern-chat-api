@@ -20,4 +20,21 @@ const getOrCreateRoom = async (sender, reciever) => {
   return { room, status };
 };
 
-module.exports = { getOrCreateRoom };
+const getActiveRooms = async (user, updatedRoomId) => {
+  const query = {
+    users: { $in: [user._id] },
+    lastMessage: { $exists: true },
+  };
+
+  !!updatedRoomId && (query._id = updatedRoomId);
+  const rooms = await Room.find(query)
+    .populate("users")
+    .populate("lastMessage")
+    .exec();
+
+  console.log(rooms);
+
+  return !!updatedRoomId ? rooms[0] : rooms;
+};
+
+module.exports = { getOrCreateRoom, getActiveRooms };
