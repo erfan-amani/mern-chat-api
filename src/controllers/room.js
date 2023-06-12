@@ -1,4 +1,5 @@
 const Room = require("../models/room");
+const { getOrCreateRoom } = require("../utils/room");
 
 const createRoom = async (req, res, next) => {
   try {
@@ -18,21 +19,8 @@ const getRoom = async (req, res, next) => {
   try {
     const { sender, reciever } = req.query;
 
-    let room = null;
-    let status = 200;
+    const { room, status } = await getOrCreateRoom(sender, reciever);
 
-    // check if exist
-    room = await Room.findOne({ users: { $all: [sender, reciever] } });
-
-    // create room
-    if (!room) {
-      status = 201;
-      room = new Room();
-      room.users.push(sender, reciever);
-      await room.save();
-    }
-
-    await room.populate("users");
     res.status(status).send(room);
   } catch (err) {
     next(err);

@@ -1,15 +1,10 @@
 const Room = require("../models/room");
 const Message = require("../models/message");
+const { getOrCreateRoom } = require("../utils/room");
 
 const registerMessageHandler = (socket, io) => {
   socket.on("join", async (other, callback) => {
-    let room;
-    room = await Room.findOne({ users: { $in: [other, socket.user._id] } });
-    if (!room) {
-      room = new Room();
-      room.users.push(other, socket.user._id);
-      await room.save();
-    }
+    const { room } = await getOrCreateRoom(socket.user._id, other);
 
     socket.join(room._id.toString());
 
