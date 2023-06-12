@@ -22,7 +22,7 @@ const getRoom = async (req, res, next) => {
     let status = 200;
 
     // check if exist
-    room = await Room.find({ users: { $in: [sender, reciver] } });
+    room = await Room.findOne({ users: { $all: [sender, reciever] } });
 
     // create room
     if (!room) {
