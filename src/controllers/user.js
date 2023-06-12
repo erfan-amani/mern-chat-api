@@ -1,29 +1,30 @@
 const Room = require("../models/room");
 const User = require("../models/user");
+const createError = require("../utils/error");
 
-const getProfile = async (req, res) => {
+const getProfile = async (req, res, next) => {
   try {
     const user = req.user;
 
     res.send(user);
   } catch (err) {
-    res.status(500).send("Something went wrong!");
+    next(err);
   }
 };
 
-const getUserData = async (req, res) => {
+const getUserData = async (req, res, next) => {
   try {
     const userId = req.params.id;
 
     const user = await User.findById(userId);
 
     if (!user) {
-      return res.status(404).send("User not found!");
+      throw createError("User not found!", 404);
     }
 
     res.send(user);
   } catch (err) {
-    res.status(500).send("Something went wrong!");
+    next(err);
   }
 };
 
@@ -35,7 +36,7 @@ const getUserRooms = async (req, res) => {
 
     res.send(rooms);
   } catch (err) {
-    res.status(500).send(err.message || "Something went wrong!");
+    next(err);
   }
 };
 
@@ -48,8 +49,7 @@ const logout = async (req, res) => {
     await user.save();
     res.send();
   } catch (err) {
-    console.log(err);
-    res.status(500).send(err.message || "Something went wrong!");
+    next(err);
   }
 };
 
