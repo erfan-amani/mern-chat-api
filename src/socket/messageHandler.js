@@ -1,22 +1,8 @@
 const Room = require("../models/room");
 const Message = require("../models/message");
-const { getOrCreateRoom, getActiveRooms } = require("../utils/room");
+const { getActiveRooms } = require("../utils/room");
 
-const registerMessageHandler = (socket, io) => {
-  socket.on("join", async (other, callback) => {
-    const { room } = await getOrCreateRoom(socket.user._id, other);
-
-    socket.join(room._id.toString());
-
-    callback(room);
-  });
-
-  socket.on("joinAll", async () => {
-    const rooms = await getActiveRooms(socket.user);
-
-    rooms.forEach((room) => socket.join(room._id.toString()));
-  });
-
+const registerMessageHandler = async (socket, io) => {
   socket.on("sendMessage", async (data) => {
     const { text, room } = data || {};
 
