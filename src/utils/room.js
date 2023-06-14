@@ -28,6 +28,7 @@ const getActiveRooms = async (user, updatedRoomId) => {
 
   !!updatedRoomId && (query._id = updatedRoomId);
   const rooms = await Room.find(query)
+    .sort({ updatedAt: -1 })
     .populate("users")
     .populate("lastMessage")
     .exec();
