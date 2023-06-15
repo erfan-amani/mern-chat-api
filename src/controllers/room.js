@@ -1,20 +1,6 @@
 const Room = require("../models/room");
 const { getOrCreateRoom, getActiveRooms } = require("../utils/room");
 
-const createRoom = async (req, res, next) => {
-  try {
-    const { sender, reciever } = req.body;
-
-    const room = new Room();
-    room.users.push(sender, reciever);
-    await room.save();
-
-    res.status(201).send(room);
-  } catch (err) {
-    next(err);
-  }
-};
-
 const getRoom = async (req, res, next) => {
   try {
     const { sender, reciever } = req.query;
@@ -29,7 +15,12 @@ const getRoom = async (req, res, next) => {
 
 const activeRooms = async (req, res, next) => {
   try {
-    const rooms = await getActiveRooms(req.user);
+    const search = req.query.search;
+    const mongooseQuery = {};
+    search &&
+      (mongooseQuery.users = { username: { $regex: new RegExp(search, "i") } });
+
+    const rooms = await getActiveRooms(req.user, null, mongooseQuery);
 
     res.send(rooms);
   } catch (err) {
@@ -37,4 +28,4 @@ const activeRooms = async (req, res, next) => {
   }
 };
 
-module.exports = { createRoom, getRoom, activeRooms };
+module.exports = { getRoom, activeRooms };

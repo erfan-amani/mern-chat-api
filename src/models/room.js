@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const Message = require("./message");
 
 const roomSchema = new mongoose.Schema(
   {
@@ -17,14 +16,6 @@ roomSchema.virtual("messages", {
   localField: "_id",
   foreignField: "room",
 });
-
-roomSchema.methods.getLastMessage = async function () {
-  const lastMessage = await Message.findOne({ room: this._id }).sort({
-    createdAt: -1,
-  });
-
-  return lastMessage;
-};
 
 const Room = mongoose.model("Room", roomSchema);
 
