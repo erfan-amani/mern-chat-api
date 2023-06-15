@@ -5,6 +5,7 @@ const messageSchema = new mongoose.Schema(
     text: { type: String, required: true },
     room: { type: mongoose.Types.ObjectId, ref: "Room", required: true },
     sender: { type: mongoose.Types.ObjectId, ref: "User", required: true },
+    read: { type: Boolean, default: false, required: true },
   },
   { timestamps: true }
 );
