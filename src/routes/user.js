@@ -5,6 +5,7 @@ const userController = require("../controllers/user");
 
 userRouter.get("/profile", apiAuth, userController.getProfile);
 userRouter.get("/my-rooms", apiAuth, userController.getUserRooms);
+userRouter.get("/all", apiAuth, userController.getAllUsers);
 userRouter.get("/logout", apiAuth, userController.logout);
 userRouter.get("/:id", apiAuth, userController.getUserData);
 

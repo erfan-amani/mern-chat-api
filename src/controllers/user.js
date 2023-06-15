@@ -53,9 +53,24 @@ const logout = async (req, res, next) => {
   }
 };
 
+const getAllUsers = async (req, res, next) => {
+  try {
+    const search = req.query.search;
+    const mongooseQuery = {};
+    search && (mongooseQuery.username = { $regex: new RegExp(search, "i") });
+
+    const users = await User.find(mongooseQuery);
+
+    res.send(users);
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   getProfile,
   getUserData,
   getUserRooms,
+  getAllUsers,
   logout,
 };
