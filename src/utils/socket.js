@@ -1,12 +1,19 @@
 const getConnectedUsers = (io) => {
   const activeList = [...io.of("/").sockets];
-  const usersList = activeList.map((s) => {
+  const usersList = [];
+
+  activeList.forEach((s) => {
     const userData = { ...s?.[1].user.toObject() };
 
     delete userData.password;
     delete userData.tokens;
 
-    return userData;
+    const notExist =
+      usersList.findIndex(
+        (u) => u._id.toString() === userData._id.toString()
+      ) === -1;
+
+    notExist && usersList.push(userData);
   });
 
   return usersList;
