@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 
 const roomSchema = new mongoose.Schema(
   {
+    pending: { type: Boolean, required: true, default: true },
     users: [{ type: mongoose.Types.ObjectId, ref: "User", required: true }],
     lastMessage: {
       type: mongoose.Types.ObjectId,

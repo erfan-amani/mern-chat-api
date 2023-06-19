@@ -2,19 +2,17 @@ const { getOrCreateRoom, getActiveRooms } = require("../utils/room");
 const getConnectedUsers = require("../utils/socket");
 
 const registerChatDataHandler = async (socket, io) => {
-  socket.on("join", async ({ otherUserId, roomId }, callback) => {
-    if (roomId) {
-      socket.join(roomId.toString());
-    } else {
-      const { room, status } = await getOrCreateRoom(
-        socket.user._id,
-        otherUserId
-      );
-      socket.join(room._id.toString());
-      status === 201 && io.to(otherUserId).emit("newRoom", room._id);
+  // CREATE ROOM WITH PENDING TRUE
+  socket.on("contact_request", async (otherUserId, callback) => {
+    const { room, status } = await getOrCreateRoom(
+      socket.user._id,
+      otherUserId
+    );
 
-      callback(room);
-    }
+    socket.join(room._id.toString());
+    status === 201 && io.to(otherUserId).emit("newRoom", room._id);
+
+    callback(room);
   });
 
   socket.on("joinAll", async () => {
