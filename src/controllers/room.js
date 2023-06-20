@@ -1,18 +1,17 @@
 const Room = require("../models/room");
 const {
-  getOrCreateRoom,
   getActiveRooms,
   getSentRequests,
   getReceivedRequests,
 } = require("../utils/room");
 
-const getRoom = async (req, res, next) => {
+const getOneRoom = async (req, res, next) => {
   try {
-    const other = req.query.other;
+    const room = await Room.findOne({
+      users: { $all: [req.user._id, req.query.other] },
+    });
 
-    const { room, status } = await getOrCreateRoom(req.user._id, other);
-
-    res.status(status).send(room);
+    res.send(room);
   } catch (err) {
     next(err);
   }
@@ -111,8 +110,20 @@ const getReceivedContactRequests = async (req, res, next) => {
   }
 };
 
+const getRoomUsers = async (req, res, next) => {
+  try {
+    const room = await Room.findById(req.query.id).populate("users");
+
+    const users = room.users.filter((u) => u._id !== req.user._id);
+
+    res.send(users);
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
-  getRoom,
+  getOneRoom,
   activeRooms,
   getAllRooms,
   sendContactRequest,
@@ -120,4 +131,5 @@ module.exports = {
   acceptContactRequest,
   getSentContactRequests,
   getReceivedContactRequests,
+  getRoomUsers,
 };

@@ -2,11 +2,11 @@ const roomRouter = require("express").Router();
 const roomController = require("../controllers/room");
 const { apiAuth } = require("../middlewares/auth");
 
-roomRouter.get("/", apiAuth, roomController.getRoom);
+roomRouter.get("/", apiAuth, roomController.getOneRoom);
 roomRouter.get("/all", apiAuth, roomController.getAllRooms);
 roomRouter.get("/active", apiAuth, roomController.activeRooms);
+roomRouter.get("/users", apiAuth, roomController.getRoomUsers);
 roomRouter.post("/contact", apiAuth, roomController.sendContactRequest);
-roomRouter.delete("/contact/:id", apiAuth, roomController.rejectContactRequest);
 roomRouter.post(
   "/contact/accept",
   apiAuth,
@@ -18,5 +18,6 @@ roomRouter.get(
   apiAuth,
   roomController.getReceivedContactRequests
 );
+roomRouter.delete("/contact/:id", apiAuth, roomController.rejectContactRequest);
 
 module.exports = roomRouter;
