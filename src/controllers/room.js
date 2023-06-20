@@ -1,5 +1,10 @@
 const Room = require("../models/room");
-const { getOrCreateRoom, getActiveRooms } = require("../utils/room");
+const {
+  getOrCreateRoom,
+  getActiveRooms,
+  getSentRequests,
+  getReceivedRequests,
+} = require("../utils/room");
 
 const getRoom = async (req, res, next) => {
   try {
@@ -38,12 +43,81 @@ const getAllRooms = async (req, res, next) => {
       $all: query.otherId ? [req.user._id, query.otherId] : [req.user._id],
     };
 
-    const requestedRooms = await Room.find(dbQuery);
+    const rooms = await Room.find(dbQuery).populate("users").exec();
 
-    res.send(requestedRooms);
+    res.send(rooms);
   } catch (err) {
     next(err);
   }
 };
 
-module.exports = { getRoom, activeRooms, getAllRooms };
+const sendContactRequest = async (req, res, next) => {
+  try {
+    const other = req.body.other;
+
+    const room = new Room({ users: [req.user._id, other] });
+    await room.save();
+
+    res.send(room);
+  } catch (err) {
+    next(err);
+  }
+};
+
+const rejectContactRequest = async (req, res, next) => {
+  try {
+    const id = req.params.id;
+
+    const room = Room.findById(id);
+    await room.delete();
+
+    res.send(room);
+  } catch (err) {
+    next(err);
+  }
+};
+
+const acceptContactRequest = async (req, res, next) => {
+  try {
+    const id = req.body.id;
+
+    const room = await Room.findById(id);
+    room.pending = false;
+    await room.save();
+
+    res.send(room);
+  } catch (err) {
+    next(err);
+  }
+};
+
+const getSentContactRequests = async (req, res, next) => {
+  try {
+    const sentRequests = await getSentRequests(req.user);
+
+    res.send(sentRequests);
+  } catch (err) {
+    next(err);
+  }
+};
+
+const getReceivedContactRequests = async (req, res, next) => {
+  try {
+    const receivedRequests = await getReceivedRequests(req.user);
+
+    res.send(receivedRequests);
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports = {
+  getRoom,
+  activeRooms,
+  getAllRooms,
+  sendContactRequest,
+  rejectContactRequest,
+  acceptContactRequest,
+  getSentContactRequests,
+  getReceivedContactRequests,
+};

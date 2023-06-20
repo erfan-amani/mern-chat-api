@@ -1,19 +1,5 @@
-const {
-  getOrCreateRoom,
-  getActiveRooms,
-  getReceivedRequests,
-  getSentRequests,
-} = require("../utils/room");
+const { getOrCreateRoom, getActiveRooms } = require("../utils/room");
 const getConnectedUsers = require("../utils/socket");
-
-const emitSentRequests = async (socket) => {
-  const sentRequests = await getSentRequests(socket.user);
-  socket.emit("receivd_requests", sentRequests);
-};
-const emitReceivedRequests = async (socket) => {
-  const receivedRequests = await getReceivedRequests(socket.user);
-  socket.emit("sent_requests", receivedRequests);
-};
 
 const registerChatDataHandler = async (socket, io) => {
   // CREATE ROOM WITH PENDING TRUE
@@ -47,10 +33,6 @@ const registerChatDataHandler = async (socket, io) => {
   // init online users
   const onlineUsers = getConnectedUsers(io);
   io.emit("onlineUsers", onlineUsers);
-
-  // init request
-  emitSentRequests(socket);
-  emitReceivedRequests(socket);
 };
 
 module.exports = registerChatDataHandler;
