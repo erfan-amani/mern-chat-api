@@ -11,11 +11,11 @@ const registerChatDataHandler = async (socket, io) => {
 
   // init active rooms
   const rooms = await getActiveRooms(socket.user);
-  socket.emit("activeRooms", rooms);
+  socket.emit("active_rooms", rooms);
 
   // init online users
   const onlineUsers = getConnectedUsers(io);
-  io.emit("onlineUsers", onlineUsers);
+  io.emit("online_users", onlineUsers);
 };
 
 module.exports = registerChatDataHandler;
