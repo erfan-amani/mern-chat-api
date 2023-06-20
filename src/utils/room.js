@@ -36,4 +36,31 @@ const getActiveRooms = async (user, updatedRoomId) => {
   return !!updatedRoomId ? rooms[0] : rooms;
 };
 
-module.exports = { getOrCreateRoom, getActiveRooms };
+const getReceivedRequests = async (myUser) => {
+  const receivedRequests = await Room.find({
+    pending: true,
+    "users.1": myUser._id,
+  })
+    .populate("users")
+    .exec();
+
+  return receivedRequests || [];
+};
+
+const getSentRequests = async (myUser) => {
+  const sentRequests = await Room.find({
+    pending: true,
+    "users.0": myUser._id,
+  })
+    .populate("users")
+    .exec();
+
+  return sentRequests || [];
+};
+
+module.exports = {
+  getOrCreateRoom,
+  getActiveRooms,
+  getReceivedRequests,
+  getSentRequests,
+};

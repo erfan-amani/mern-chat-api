@@ -3,9 +3,9 @@ const { getOrCreateRoom, getActiveRooms } = require("../utils/room");
 
 const getRoom = async (req, res, next) => {
   try {
-    const { sender, reciever } = req.query;
+    const other = req.query.other;
 
-    const { room, status } = await getOrCreateRoom(sender, reciever);
+    const { room, status } = await getOrCreateRoom(req.user._id, other);
 
     res.status(status).send(room);
   } catch (err) {
@@ -28,4 +28,22 @@ const activeRooms = async (req, res, next) => {
   }
 };
 
-module.exports = { getRoom, activeRooms };
+const getAllRooms = async (req, res, next) => {
+  try {
+    const query = req.query;
+    const dbQuery = {};
+
+    query.pending && (dbQuery.pending = query.pending);
+    dbQuery.users = {
+      $all: query.otherId ? [req.user._id, query.otherId] : [req.user._id],
+    };
+
+    const requestedRooms = await Room.find(dbQuery);
+
+    res.send(requestedRooms);
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports = { getRoom, activeRooms, getAllRooms };
