@@ -48,7 +48,6 @@ userSchema.statics.findByCredential = async function (username, password) {
   }
 
   const isPasswordMatch = await bcrypt.compare(password, user.password);
-  console.log({ isPasswordMatch });
 
   if (!isPasswordMatch) {
     throw createError("Password is not match with username!", 400);
