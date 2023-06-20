@@ -7,13 +7,16 @@
     "dev": "nodemon index.js",
     "start": "node index.js"
   },
+  "engines": {
+    "node": ">=14.20.1"
+  },
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.1.4",
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.0",
-    "mongoose": "^7.2.2",
+    "mongoose": "^7.3.0",
     "socket.io": "^4.6.2"
   },
   "devDependencies": {
