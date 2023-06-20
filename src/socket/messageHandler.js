@@ -15,8 +15,8 @@ const registerMessageHandler = async (socket, io) => {
 
     io.to(room).emit("message", message);
 
-    const rooms = await getActiveRooms(socket.user, room);
-    io.to(room).emit("activeRooms", rooms);
+    const updatedRoom = await getActiveRooms(socket.user, room);
+    io.to(room).emit("room_update", updatedRoom);
   });
 
   socket.on("read", async (messageId, cb) => {

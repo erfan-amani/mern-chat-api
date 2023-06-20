@@ -9,10 +9,6 @@ const registerChatDataHandler = async (socket, io) => {
     socket.join(socket.user._id.toString());
   });
 
-  // init active rooms
-  const rooms = await getActiveRooms(socket.user);
-  socket.emit("active_rooms", rooms);
-
   // init online users
   const onlineUsers = getConnectedUsers(io);
   io.emit("online_users", onlineUsers);
