@@ -73,8 +73,7 @@ const rejectContactRequest = async (req, res, next) => {
   try {
     const id = req.params.id;
 
-    const room = Room.findById(id);
-    await room.delete();
+    const room = await Room.findByIdAndDelete(id);
 
     res.send(room);
   } catch (err) {
