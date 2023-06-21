@@ -30,7 +30,7 @@ const registerMessageHandler = async (socket, io) => {
       message.read = true;
       await message.save();
 
-      io.to(message.room.toString()).emit("updateMessage", message);
+      io.to(message.room.toString()).emit("message_update", message);
       cb();
     } catch (err) {
       cb(err.message || err);

@@ -54,6 +54,12 @@ const sendContactRequest = async (req, res, next) => {
   try {
     const other = req.body.other;
 
+    const existedRoom = await Room.findOne({
+      users: { $all: [req.user._id, other] },
+    });
+
+    if (!!existedRoom) throw new Error("A request has already sent!");
+
     const room = new Room({ users: [req.user._id, other] });
     await room.save();
 
