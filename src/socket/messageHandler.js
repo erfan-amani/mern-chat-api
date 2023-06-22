@@ -3,7 +3,7 @@ const Message = require("../models/message");
 const { getActiveRooms } = require("../utils/room");
 
 const registerMessageHandler = async (socket, io) => {
-  socket.on("sendMessage", async (data) => {
+  socket.on("send_message", async (data) => {
     const { text, room } = data || {};
 
     const message = new Message({ room, text, sender: socket.user._id });
