@@ -1,4 +1,5 @@
 const Room = require("../models/room");
+const { sendNotification } = require("../utils/notification");
 const {
   getActiveRooms,
   getSentRequests,
@@ -62,6 +63,12 @@ const sendContactRequest = async (req, res, next) => {
 
     const room = new Room({ users: [req.user._id, other] });
     await room.save();
+
+    // to other user - other._id
+    sendNotification(req.app.get("io"), other, {
+      title: "New contact request",
+      description: `${req.user.username} want to contact to you. By accepting the request they can send message to you.`,
+    });
 
     res.send(room);
   } catch (err) {

@@ -11,7 +11,7 @@ const authRouter = require("./routes/auth");
 const userRouter = require("./routes/user");
 const roomRouter = require("./routes/room");
 const messageRouter = require("./routes/message");
-const getConnectedUsers = require("./utils/socket");
+const { getConnectedUsers } = require("./utils/socket");
 require("./db/mongoose");
 
 const app = express();
@@ -23,6 +23,8 @@ io.use(socketAuth);
 io.on("connection", (socket) => {
   registerChatDataHandler(socket, io);
   registerMessageHandler(socket, io);
+
+  app.set("io", io);
 
   socket.on("disconnect", () => {
     const users = getConnectedUsers(io);

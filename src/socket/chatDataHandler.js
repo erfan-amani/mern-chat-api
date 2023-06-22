@@ -1,5 +1,5 @@
 const { getActiveRooms } = require("../utils/room");
-const getConnectedUsers = require("../utils/socket");
+const { getConnectedUsers } = require("../utils/socket");
 
 const registerChatDataHandler = async (socket, io) => {
   socket.on("init", async () => {

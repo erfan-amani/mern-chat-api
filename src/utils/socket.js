@@ -19,4 +19,16 @@ const getConnectedUsers = (io) => {
   return usersList;
 };
 
-module.exports = getConnectedUsers;
+const getUserSocketConnection = (io, userId) => {
+  const activeList = [...io.of("/").sockets];
+
+  const socket = activeList.find((s) => {
+    const userData = { ...s?.[1].user.toObject() };
+
+    return userData._id.toString() === userId.toString();
+  });
+
+  return socket[1];
+};
+
+module.exports = { getConnectedUsers, getUserSocketConnection };
