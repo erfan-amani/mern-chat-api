@@ -66,6 +66,7 @@ const sendContactRequest = async (req, res, next) => {
 
     // to other user - other._id
     sendNotification(req.app.get("io"), other, {
+      user: other,
       title: "New contact request",
       description: `${req.user.username} want to contact to you. By accepting the request they can send message to you.`,
     });
