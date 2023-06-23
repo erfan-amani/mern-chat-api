@@ -11,6 +11,7 @@ const authRouter = require("./routes/auth");
 const userRouter = require("./routes/user");
 const roomRouter = require("./routes/room");
 const messageRouter = require("./routes/message");
+const notificationRouter = require("./routes/notification");
 const { getConnectedUsers } = require("./utils/socket");
 require("./db/mongoose");
 
@@ -39,6 +40,7 @@ app.use("/auth", authRouter);
 app.use("/user", userRouter);
 app.use("/room", roomRouter);
 app.use("/message", messageRouter);
+app.use("/notification", notificationRouter);
 
 app.use((error, req, res, next) => {
   const { status = 500, message = error } = error || {};
