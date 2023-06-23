@@ -64,7 +64,6 @@ const sendContactRequest = async (req, res, next) => {
     const room = new Room({ users: [req.user._id, other] });
     await room.save();
 
-    // to other user - other._id
     sendNotification(req.app.get("io"), other, {
       user: other,
       title: "New contact request",
@@ -83,6 +82,13 @@ const rejectContactRequest = async (req, res, next) => {
 
     const room = await Room.findByIdAndDelete(id);
 
+    const other = room.users.find((u) => u !== req.user._id);
+    sendNotification(req.app.get("io"), other, {
+      user: other,
+      title: "Request rejected",
+      description: `${req.user.username} rejected your conteact request. You can send another request if you want to send message to ${req.user.username}.`,
+    });
+
     res.send(room);
   } catch (err) {
     next(err);
@@ -96,6 +102,14 @@ const acceptContactRequest = async (req, res, next) => {
     const room = await Room.findById(id);
     room.pending = false;
     await room.save();
+
+    // to other user - other._id
+    const other = room.users.find((u) => u !== req.user._id);
+    sendNotification(req.app.get("io"), other, {
+      user: other,
+      title: "Request accepted",
+      description: `${req.user.username} accepted your conteact request. By accepting now you can send message to  ${req.user.username}.`,
+    });
 
     res.send(room);
   } catch (err) {
