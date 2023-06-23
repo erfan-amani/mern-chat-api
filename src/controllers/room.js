@@ -79,15 +79,17 @@ const sendContactRequest = async (req, res, next) => {
 const rejectContactRequest = async (req, res, next) => {
   try {
     const id = req.params.id;
+    const type = req.query.type;
 
     const room = await Room.findByIdAndDelete(id);
 
     const other = room.users.find((u) => u !== req.user._id);
-    sendNotification(req.app.get("io"), other, {
-      user: other,
-      title: "Request rejected",
-      description: `${req.user.username} rejected your conteact request. You can send another request if you want to send message to ${req.user.username}.`,
-    });
+    type === "REJECT" &&
+      sendNotification(req.app.get("io"), other, {
+        user: other,
+        title: "Request rejected",
+        description: `${req.user.username} rejected your conteact request. You can send another request if you want to send message to ${req.user.username}.`,
+      });
 
     res.send(room);
   } catch (err) {
