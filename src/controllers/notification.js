@@ -25,4 +25,19 @@ const getAndReadNotification = async (req, res, next) => {
   }
 };
 
-module.exports = { getAll, getAndReadNotification };
+const readAll = async (req, res, next) => {
+  try {
+    const notifications = await Notification.find({ user: req.user._id });
+
+    notifications.forEach((notif) => {
+      notif.read = true;
+      notif.save();
+    });
+
+    res.send(notifications);
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { getAll, getAndReadNotification, readAll };
