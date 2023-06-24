@@ -1,12 +1,24 @@
 const Notification = require("../models/notification");
+const { generateResponseWithPagination } = require("../utils/response");
 
 const getAll = async (req, res, next) => {
   try {
-    const notifications = await Notification.find({ user: req.user._id }).sort({
-      createdAt: -1,
-    });
+    const { skip, limit, page } = req.pagination;
 
-    res.send(notifications);
+    const total = await Notification.count({ user: req.user._id });
+    const notifications = await Notification.find({ user: req.user._id })
+      .sort({
+        createdAt: -1,
+      })
+      .limit(limit)
+      .skip(skip);
+
+    const response = generateResponseWithPagination(notifications, {
+      limit,
+      page,
+      total,
+    });
+    res.send(response);
   } catch (error) {
     next(error);
   }
