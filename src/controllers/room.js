@@ -70,7 +70,7 @@ const sendContactRequest = async (req, res, next) => {
       description: `${req.user.username} want to contact to you. By accepting the request they can send message to you.`,
     });
 
-    res.send(room);
+    res.status(201).send(room);
   } catch (err) {
     next(err);
   }
