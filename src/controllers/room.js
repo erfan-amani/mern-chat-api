@@ -1,5 +1,6 @@
 const Room = require("../models/room");
 const { sendNotification } = require("../utils/notification");
+const { generateResponseWithPagination } = require("../utils/response");
 const {
   getActiveRooms,
   getSentRequests,
@@ -35,6 +36,7 @@ const activeRooms = async (req, res, next) => {
 
 const getAllRooms = async (req, res, next) => {
   try {
+    const { skip, limit, page } = req.pagination;
     const query = req.query;
     const dbQuery = {};
 
@@ -43,9 +45,19 @@ const getAllRooms = async (req, res, next) => {
       $all: query.otherId ? [req.user._id, query.otherId] : [req.user._id],
     };
 
-    const rooms = await Room.find(dbQuery).populate("users").exec();
+    const rooms = await Room.find(dbQuery)
+      .limit(limit)
+      .skip(skip)
+      .populate("users")
+      .exec();
 
-    res.send(rooms);
+    const total = await Room.count(dbQuery);
+    const response = generateResponseWithPagination(rooms, {
+      limit,
+      page,
+      total,
+    });
+    res.send(response);
   } catch (err) {
     next(err);
   }
@@ -121,9 +133,19 @@ const acceptContactRequest = async (req, res, next) => {
 
 const getSentContactRequests = async (req, res, next) => {
   try {
-    const sentRequests = await getSentRequests(req.user);
+    const { skip, limit, page } = req.pagination;
 
-    res.send(sentRequests);
+    const { requests, total } = await getSentRequests(req.user, {
+      skip,
+      limit,
+    });
+
+    const response = generateResponseWithPagination(requests, {
+      limit,
+      page,
+      total,
+    });
+    res.send(response);
   } catch (err) {
     next(err);
   }
@@ -131,9 +153,19 @@ const getSentContactRequests = async (req, res, next) => {
 
 const getReceivedContactRequests = async (req, res, next) => {
   try {
-    const receivedRequests = await getReceivedRequests(req.user);
+    const { skip, limit, page } = req.pagination;
 
-    res.send(receivedRequests);
+    const { requests, total } = await getReceivedRequests(req.user, {
+      skip,
+      limit,
+    });
+
+    const response = generateResponseWithPagination(requests, {
+      limit,
+      page,
+      total,
+    });
+    res.send(response);
   } catch (err) {
     next(err);
   }

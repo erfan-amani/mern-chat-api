@@ -20,14 +20,14 @@ const getOrCreateRoom = async (sender, reciever) => {
   return { room, status };
 };
 
-const getActiveRooms = async (user, updatedRoomId) => {
+const getActiveRooms = async (user, updatedRoomId, paginationOptions = {}) => {
   const query = {
     users: { $in: [user._id] },
     lastMessage: { $exists: true },
   };
 
   !!updatedRoomId && (query._id = updatedRoomId);
-  const rooms = await Room.find(query)
+  const rooms = await Room.find(query, {}, paginationOptions)
     .sort({ updatedAt: -1 })
     .populate("users")
     .populate("lastMessage")
@@ -36,26 +36,32 @@ const getActiveRooms = async (user, updatedRoomId) => {
   return !!updatedRoomId ? rooms[0] : rooms;
 };
 
-const getReceivedRequests = async (myUser) => {
-  const receivedRequests = await Room.find({
+const getReceivedRequests = async (myUser, paginationOptions = {}) => {
+  const dbQuery = {
     pending: true,
     "users.1": myUser._id,
-  })
+  };
+
+  const total = await Room.count(dbQuery);
+  const requests = await Room.find(dbQuery, {}, paginationOptions)
     .populate("users")
     .exec();
 
-  return receivedRequests || [];
+  return { requests, total };
 };
 
-const getSentRequests = async (myUser) => {
-  const sentRequests = await Room.find({
+const getSentRequests = async (myUser, paginationOptions = {}) => {
+  const dbQuery = {
     pending: true,
     "users.0": myUser._id,
-  })
+  };
+
+  const total = await Room.count(dbQuery);
+  const requests = await Room.find(dbQuery, {}, paginationOptions)
     .populate("users")
     .exec();
 
-  return sentRequests || [];
+  return { requests, total };
 };
 
 module.exports = {
