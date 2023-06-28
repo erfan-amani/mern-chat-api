@@ -1,5 +1,7 @@
 const Notification = require("../models/notification");
 const { generateResponseWithPagination } = require("../utils/response");
+const createError = require("../utils/error");
+const { getNotificationSchema } = require("../validators");
 
 const getAll = async (req, res, next) => {
   try {
@@ -26,6 +28,8 @@ const getAll = async (req, res, next) => {
 
 const getAndReadNotification = async (req, res, next) => {
   try {
+    await getNotificationSchema.validateAsync(req.params);
+
     const notification = await Notification.findById(req.params.id);
 
     notification.read = true;
@@ -33,7 +37,7 @@ const getAndReadNotification = async (req, res, next) => {
     notification.save();
     res.send(notification);
   } catch (error) {
-    next(error);
+    next(createError(error));
   }
 };
 
