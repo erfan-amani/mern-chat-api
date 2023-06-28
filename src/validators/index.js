@@ -10,6 +10,7 @@ const {
   acceptContactRequestSchema,
   getRoomUsersSchema,
 } = require("./room.validator");
+const { getUserDataSchema, getAllUsersSchema } = require("./user.validator");
 
 module.exports = {
   registerSchema,
@@ -24,4 +25,6 @@ module.exports = {
   rejectContactRequestSchema,
   acceptContactRequestSchema,
   getRoomUsersSchema,
+  getUserDataSchema,
+  getAllUsersSchema,
 };

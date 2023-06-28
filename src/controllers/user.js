@@ -1,6 +1,7 @@
 const Room = require("../models/room");
 const User = require("../models/user");
 const createError = require("../utils/error");
+const validators = require("../validators");
 
 const getProfile = async (req, res, next) => {
   try {
@@ -14,17 +15,15 @@ const getProfile = async (req, res, next) => {
 
 const getUserData = async (req, res, next) => {
   try {
+    await validators.getUserDataSchema.validateAsync(req.params);
+
     const userId = req.params.id;
 
     const user = await User.findById(userId);
 
-    if (!user) {
-      throw createError("User not found!", 404);
-    }
-
     res.send(user);
   } catch (err) {
-    next(err);
+    next(createError(err));
   }
 };
 
@@ -55,6 +54,8 @@ const logout = async (req, res, next) => {
 
 const getAllUsers = async (req, res, next) => {
   try {
+    await validators.getUserDataSchema.validateAsync(req.params);
+
     const search = req.query.search;
     const mongooseQuery = {};
     search && (mongooseQuery.username = { $regex: new RegExp(search, "i") });
@@ -63,7 +64,7 @@ const getAllUsers = async (req, res, next) => {
 
     res.send(users);
   } catch (err) {
-    next(err);
+    next(createError(err));
   }
 };
 
