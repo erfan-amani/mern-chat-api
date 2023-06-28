@@ -1,4 +1,5 @@
 const Room = require("../models/room");
+const createError = require("../utils/error");
 const { sendNotification } = require("../utils/notification");
 const { generateResponseWithPagination } = require("../utils/response");
 const {
@@ -6,21 +7,26 @@ const {
   getSentRequests,
   getReceivedRequests,
 } = require("../utils/room");
+const validationSchemas = require("../validators");
 
 const getOneRoom = async (req, res, next) => {
   try {
+    await validationSchemas.getOneRoomSchema.validateAsync(req.query);
+
     const room = await Room.findOne({
       users: { $all: [req.user._id, req.query.other] },
     });
 
     res.send(room);
   } catch (err) {
-    next(err);
+    next(createError(err));
   }
 };
 
 const activeRooms = async (req, res, next) => {
   try {
+    await validationSchemas.getActiveRoomsSchema.validateAsync(req.query);
+
     const search = req.query.search;
     const mongooseQuery = {};
     search &&
@@ -30,12 +36,14 @@ const activeRooms = async (req, res, next) => {
 
     res.send(rooms);
   } catch (err) {
-    next(err);
+    next(createError(err));
   }
 };
 
 const getAllRooms = async (req, res, next) => {
   try {
+    await validationSchemas.getAllRoomsSchema.validateAsync(req.query);
+
     const { skip, limit, page } = req.pagination;
     const query = req.query;
     const dbQuery = {};
@@ -59,12 +67,14 @@ const getAllRooms = async (req, res, next) => {
     });
     res.send(response);
   } catch (err) {
-    next(err);
+    next(createError(err));
   }
 };
 
 const sendContactRequest = async (req, res, next) => {
   try {
+    await validationSchemas.sendContactRequestSchema.validateAsync(req.body);
+
     const other = req.body.other;
 
     const existedRoom = await Room.findOne({
@@ -84,12 +94,17 @@ const sendContactRequest = async (req, res, next) => {
 
     res.status(201).send(room);
   } catch (err) {
-    next(err);
+    next(createError(err));
   }
 };
 
 const rejectContactRequest = async (req, res, next) => {
   try {
+    await validationSchemas.rejectContactRequestSchema.validateAsync({
+      ...req.params,
+      ...req.query,
+    });
+
     const id = req.params.id;
     const type = req.query.type;
 
@@ -105,12 +120,14 @@ const rejectContactRequest = async (req, res, next) => {
 
     res.send(room);
   } catch (err) {
-    next(err);
+    next(createError(err));
   }
 };
 
 const acceptContactRequest = async (req, res, next) => {
   try {
+    await validationSchemas.acceptContactRequestSchema.validateAsync(req.body);
+
     const id = req.body.id;
 
     const room = await Room.findById(id);
@@ -127,7 +144,7 @@ const acceptContactRequest = async (req, res, next) => {
 
     res.send(room);
   } catch (err) {
-    next(err);
+    next(createError(err));
   }
 };
 
@@ -173,13 +190,15 @@ const getReceivedContactRequests = async (req, res, next) => {
 
 const getRoomUsers = async (req, res, next) => {
   try {
+    await validationSchemas.getRoomUsersSchema.validateAsync(req.query);
+
     const room = await Room.findById(req.query.id).populate("users");
 
     const users = room.users.filter((u) => u._id !== req.user._id);
 
     res.send(users);
   } catch (err) {
-    next(err);
+    next(createError(err));
   }
 };
 
