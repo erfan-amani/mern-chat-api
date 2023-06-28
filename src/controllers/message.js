@@ -1,19 +1,18 @@
 const Message = require("../models/message");
 const createError = require("../utils/error");
+const { getAllMessagesSchema } = require("../validators");
 
 const getMessagesOfRoom = async (req, res, next) => {
   try {
-    const room = req.query.room;
+    await getAllMessagesSchema.validateAsync(req.query);
 
-    if (!room) {
-      throw createError("Please provide room!", 400);
-    }
+    const room = req.query.room;
 
     const messages = await Message.find({ room });
 
     res.send(messages);
   } catch (err) {
-    next(err);
+    next(createError(err));
   }
 };
 
