@@ -1,22 +1,35 @@
-const Room = require("../models/room");
 const Message = require("../models/message");
-const { getActiveRooms } = require("../utils/room");
+const { getUserSocketConnection } = require("../utils/socket");
 
 const registerMessageHandler = async (socket, io) => {
   socket.on("send_message", async (data) => {
     const { text, room } = data || {};
 
     const message = new Message({ room, text, sender: socket.user._id });
+    await message.save(); // save earlier because of populate('lastMessage')
 
     await message.populate("room");
+
+    const noChatHistory = !message.room.lastMessage;
     message.room.lastMessage = message._id;
+
+    await message.room.populate("users");
+    await message.room.populate("lastMessage");
+
+    if (noChatHistory) {
+      for (const user of message.room.users) {
+        const userSocket = await getUserSocketConnection(io, user._id);
+        userSocket.join(room.toString());
+        // because user joint to room here we emit data directly
+        userSocket.emit("room_update", message.room);
+        userSocket.emit("message", message);
+      }
+    } else {
+      io.to(room).emit("room_update", message.room);
+      io.to(room).emit("message", message);
+    }
+
     await message.room.save();
-    await message.save();
-
-    io.to(room).emit("message", message);
-
-    const updatedRoom = await getActiveRooms(socket.user, room);
-    io.to(room).emit("room_update", updatedRoom);
   });
 
   socket.on("read", async (messageId, cb) => {
