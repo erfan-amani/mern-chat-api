@@ -13,7 +13,7 @@ const register = async (req, res, next) => {
     res.status(201).send({ user, token });
   } catch (error) {
     if (error.name === "MongoServerError" && error.code === 11000) {
-      next(createError("Username is in use!", 400));
+      next(createError(null, "Username is in use!", 400));
     } else {
       next(createError(error));
     }
