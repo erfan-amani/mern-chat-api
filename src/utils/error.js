@@ -1,15 +1,16 @@
-const createError = (err, message = "Something went wrong!", status = 500) => {
-  if (err?.details?.[0]) {
-    const error = new Error(err.details[0].message);
-    error.status = 422;
+const createError = (error) => {
+  let errorResponse;
 
-    return error;
+  if (error?.details?.[0]) {
+    errorResponse = new Error(error.details[0].message);
+    errorResponse.status = 422;
   } else {
-    const error = new Error(message);
-    error.status = status;
-
-    return error;
+    const { message = "Something went wrong!", status = 500 } = error;
+    errorResponse = new Error(message);
+    errorResponse.status = status;
   }
+
+  return errorResponse;
 };
 
 module.exports = createError;

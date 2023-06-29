@@ -44,13 +44,13 @@ userSchema.statics.findByCredential = async function (username, password) {
   const user = await User.findOne({ username });
 
   if (!user) {
-    throw createError("User not found!", 404);
+    throw { message: "User not found!", status: 404 };
   }
 
   const isPasswordMatch = await bcrypt.compare(password, user.password);
 
   if (!isPasswordMatch) {
-    throw createError("Password is not match with username!", 400);
+    throw { message: "Password is not match with username!", status: 400 };
   }
 
   return user;
