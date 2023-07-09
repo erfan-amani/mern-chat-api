@@ -20,7 +20,7 @@ After cloning install dependencies:
 ```bash
 npm install 
 # or
-yarn add
+yarn
 ```
 
 Then, run the development server:
